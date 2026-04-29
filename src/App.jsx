@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import AdminInventory from './pages/AdminInventory'
 import AdminInventoryCreate from './pages/AdminInventoryCreate'
+import AdminInventoryEdit from './pages/AdminInventoryEdit'
 import AdminInventoryDetails from './pages/AdminInventoryDetails'
 import './App.css'
 
@@ -12,6 +13,7 @@ function App() {
         <Route path="/admin/inventory" element={<AdminInventory />} />
         <Route path="/admin/inventory/create" element={<AdminInventoryCreate />} />
         <Route path="/admin/inventory/:id" element={<AdminInventoryDetails />} />
+        <Route path="/admin/inventory/:id/edit" element={<AdminInventoryEdit />} />
       </Routes>
     </BrowserRouter>
   )

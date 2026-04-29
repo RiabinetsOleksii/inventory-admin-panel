@@ -46,3 +46,23 @@ export function deleteItem(id) {
     method: 'DELETE',
   })
 }
+
+export function updateItem(id, data) {
+  return request(`/inventory/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+}
+
+export function updateItemPhoto(id, photo) {
+  const formData = new FormData()
+  formData.append('photo', photo)
+
+  return request(`/inventory/${id}/photo`, {
+    method: 'PUT',
+    body: formData,
+  })
+}
