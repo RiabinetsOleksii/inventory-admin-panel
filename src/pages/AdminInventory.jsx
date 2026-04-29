@@ -1,12 +1,74 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-const inventoryItems = [
-  { id: '1001', name: 'Laptop Pro 14', quantity: 12, status: 'In stock' },
-  { id: '1002', name: 'Wireless Mouse', quantity: 48, status: 'In stock' },
-  { id: '1003', name: 'USB-C Dock', quantity: 6, status: 'Low stock' },
-]
+import ConfirmModal from '../components/inventory/ConfirmModal'
+import InventoryTable from '../components/inventory/InventoryTable'
+import { deleteItem, getInventory } from '../services/inventoryApi'
 
 function AdminInventory() {
+  const [items, setItems] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [itemToDelete, setItemToDelete] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    let isActive = true
+
+    const loadInventory = async () => {
+      try {
+        const inventory = await getInventory()
+
+        if (isActive) {
+          setItems(Array.isArray(inventory) ? inventory : inventory?.items || [])
+          setError('')
+        }
+      } catch (loadError) {
+        if (isActive) {
+          setError(loadError instanceof Error ? loadError.message : 'Не вдалося завантажити список')
+        }
+      } finally {
+        if (isActive) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadInventory()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
+
+  const handleDeleteRequest = (item) => {
+    setItemToDelete(item)
+  }
+
+  const handleDeleteCancel = () => {
+    if (!isDeleting) {
+      setItemToDelete(null)
+    }
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!itemToDelete) {
+      return
+    }
+
+    setIsDeleting(true)
+
+    try {
+      await deleteItem(itemToDelete.id)
+      setItems((currentItems) => currentItems.filter((item) => item.id !== itemToDelete.id))
+      setItemToDelete(null)
+      setError('')
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Не вдалося видалити позицію')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   return (
     <main className="admin-page">
       <header className="admin-header">
@@ -21,23 +83,19 @@ function AdminInventory() {
       </header>
 
       <section className="admin-card">
-        <div className="admin-table">
-          <div className="admin-table-row admin-table-head">
-            <span>Item</span>
-            <span>Quantity</span>
-            <span>Status</span>
-            <span>Action</span>
-          </div>
-          {inventoryItems.map((item) => (
-            <div key={item.id} className="admin-table-row">
-              <span>{item.name}</span>
-              <span>{item.quantity}</span>
-              <span>{item.status}</span>
-              <Link to={`/admin/inventory/${item.id}`}>View</Link>
-            </div>
-          ))}
-        </div>
+        {error ? <p className="inventory-form-error">{error}</p> : null}
+        {isLoading ? <p>Loading inventory...</p> : <InventoryTable items={items} onDelete={handleDeleteRequest} />}
       </section>
+
+      <ConfirmModal
+        isOpen={Boolean(itemToDelete)}
+        title="Видалити позицію?"
+        description={itemToDelete ? `Позиція «${itemToDelete.name}» буде видалена без можливості відновлення.` : ''}
+        confirmLabel={isDeleting ? 'Видалення...' : 'Видалити'}
+        cancelLabel="Скасувати"
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </main>
   )
 }

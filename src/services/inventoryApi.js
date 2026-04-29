@@ -40,3 +40,9 @@ export function createItem(data) {
     body: formData,
   })
 }
+
+export function deleteItem(id) {
+  return request(`/inventory/${id}`, {
+    method: 'DELETE',
+  })
+}
