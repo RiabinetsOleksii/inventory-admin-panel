@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ConfirmModal from '../components/inventory/ConfirmModal'
 import InventoryTable from '../components/inventory/InventoryTable'
-import { deleteItem, getInventory } from '../services/inventoryApi'
+import { deleteItem, fetchInventory } from '../services/inventoryApi'
 
 function AdminInventory() {
   const [items, setItems] = useState([])
@@ -16,10 +16,11 @@ function AdminInventory() {
 
     const loadInventory = async () => {
       try {
-        const inventory = await getInventory()
+        const inventory = await fetchInventory()
+        const normalizedItems = Array.isArray(inventory) ? inventory : inventory?.items || []
 
         if (isActive) {
-          setItems(Array.isArray(inventory) ? inventory : inventory?.items || [])
+          setItems(normalizedItems)
           setError('')
         }
       } catch (loadError) {
@@ -59,9 +60,8 @@ function AdminInventory() {
 
     try {
       await deleteItem(itemToDelete.id)
-      setItems((currentItems) => currentItems.filter((item) => item.id !== itemToDelete.id))
+      setItems((currentItems) => currentItems.filter((item) => String(item.id) !== String(itemToDelete.id)))
       setItemToDelete(null)
-      setError('')
     } catch (deleteError) {
       setError(deleteError instanceof Error ? deleteError.message : 'Не вдалося видалити позицію')
     } finally {
@@ -77,7 +77,7 @@ function AdminInventory() {
           <h1>Inventory list</h1>
           <p className="admin-copy">Browse items, open details, or add a new product.</p>
         </div>
-        <Link className="admin-button" to="/admin/inventory/create">
+        <Link className="admin-button" to="/create">
           Add item
         </Link>
       </header>

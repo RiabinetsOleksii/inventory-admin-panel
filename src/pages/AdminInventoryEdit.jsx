@@ -1,52 +1,30 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getInventory, updateItem, updateItemPhoto } from '../services/inventoryApi'
+import { useInventory } from '../store/InventoryContext'
 
 function AdminInventoryEdit() {
   const { id } = useParams()
-  const [item, setItem] = useState(null)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [photo, setPhoto] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isInitialized, setIsInitialized] = useState(false)
   const [isSavingText, setIsSavingText] = useState(false)
   const [isSavingPhoto, setIsSavingPhoto] = useState(false)
   const [error, setError] = useState('')
   const [textMessage, setTextMessage] = useState('')
   const [photoMessage, setPhotoMessage] = useState('')
+  const { getItemById, saveInventoryItem, saveInventoryPhoto, isLoading } = useInventory()
+
+  const item = getItemById(id)
 
   useEffect(() => {
-    let isActive = true
-
-    const loadItem = async () => {
-      try {
-        const inventory = await getInventory()
-        const items = Array.isArray(inventory) ? inventory : inventory?.items || []
-        const foundItem = items.find((currentItem) => String(currentItem.id) === String(id)) || null
-
-        if (isActive) {
-          setItem(foundItem)
-          setName(foundItem?.name || '')
-          setDescription(foundItem?.description || '')
-          setError(foundItem ? '' : 'Позицію не знайдено')
-        }
-      } catch (loadError) {
-        if (isActive) {
-          setError(loadError instanceof Error ? loadError.message : 'Не вдалося завантажити позицію')
-        }
-      } finally {
-        if (isActive) {
-          setIsLoading(false)
-        }
-      }
+    if (item && !isInitialized) {
+      setName(item.name || '')
+      setDescription(item.description || '')
+      setError('')
+      setIsInitialized(true)
     }
-
-    loadItem()
-
-    return () => {
-      isActive = false
-    }
-  }, [id])
+  }, [id, item, isInitialized])
 
   const handleTextSubmit = async (event) => {
     event.preventDefault()
@@ -60,7 +38,7 @@ function AdminInventoryEdit() {
     setIsSavingText(true)
 
     try {
-      await updateItem(id, {
+      await saveInventoryItem(id, {
         name: name.trim(),
         description: description.trim(),
       })
@@ -85,7 +63,7 @@ function AdminInventoryEdit() {
     setIsSavingPhoto(true)
 
     try {
-      await updateItemPhoto(id, photo)
+      await saveInventoryPhoto(id, photo)
       setError('')
       setPhotoMessage('Фото оновлено')
       setPhoto(null)
@@ -105,7 +83,7 @@ function AdminInventoryEdit() {
           <h1>Edit item</h1>
           <p className="admin-copy">Change text data separately from the item photo.</p>
         </div>
-        <Link className="admin-button admin-button-secondary" to="/admin/inventory">
+        <Link className="admin-button admin-button-secondary" to="/">
           Back to list
         </Link>
       </header>
@@ -165,7 +143,7 @@ function AdminInventoryEdit() {
               {photoMessage ? <p>{photoMessage}</p> : null}
 
               <button type="submit" className="admin-button" disabled={isSavingPhoto}>
-                {isSavingPhoto ? 'Uploading...' : 'Update photo'}
+                {isSavingPhoto ? 'Uploading...' : 'Update Photo'}
               </button>
             </form>
           </div>

@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import InventoryForm from '../components/inventory/InventoryForm'
-import { createItem } from '../services/inventoryApi'
+import { useInventory } from '../store/InventoryContext'
 
 function AdminInventoryCreate() {
   const navigate = useNavigate()
+  const { addInventoryItem } = useInventory()
 
   const handleCreate = async (formData) => {
-    await createItem(formData)
-    navigate('/admin/inventory')
+    await addInventoryItem(formData)
+    navigate('/')
   }
 
   return (
@@ -18,6 +19,9 @@ function AdminInventoryCreate() {
           <h1>Add inventory item</h1>
           <p className="admin-copy">Fill in the item name, description, and optional photo.</p>
         </div>
+        <button type="button" className="admin-button admin-button-secondary" onClick={() => navigate('/')}>
+          Back to list
+        </button>
       </header>
 
       <section className="admin-card">

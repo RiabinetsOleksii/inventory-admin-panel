@@ -1,4 +1,85 @@
 const API_BASE_URL = ''
+const INVENTORY_STORAGE_KEY = 'inventory-items'
+const USE_MOCK_STORAGE = !API_BASE_URL
+
+const seedInventory = [
+  {
+    id: '1001',
+    name: 'Laptop Pro 14',
+    description: 'Lightweight laptop for admin inventory demos.',
+    imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80',
+    color: 'Space Gray',
+    quantity: 12,
+  },
+  {
+    id: '1002',
+    name: 'Wireless Mouse',
+    description: 'Ergonomic mouse with silent clicks.',
+    imageUrl: 'https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=600&q=80',
+    color: 'Black',
+    quantity: 48,
+  },
+  {
+    id: '1003',
+    name: 'USB-C Dock',
+    description: 'Docking station with multiple display outputs.',
+    imageUrl: 'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=600&q=80',
+    color: 'Silver',
+    quantity: 6,
+  },
+]
+
+function readStoredInventory() {
+  if (typeof window === 'undefined') {
+    return seedInventory
+  }
+
+  const storedValue = window.localStorage.getItem(INVENTORY_STORAGE_KEY)
+
+  if (!storedValue) {
+    window.localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(seedInventory))
+    return seedInventory
+  }
+
+  try {
+    const parsedValue = JSON.parse(storedValue)
+    return Array.isArray(parsedValue) ? parsedValue : seedInventory
+  } catch {
+    window.localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(seedInventory))
+    return seedInventory
+  }
+}
+
+function writeStoredInventory(items) {
+  if (typeof window === 'undefined') {
+    return items
+  }
+
+  window.localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(items))
+  return items
+}
+
+function createStoredItem(data) {
+  const nextId = String(Date.now())
+  return {
+    id: nextId,
+    name: data.name,
+    description: data.description || '',
+    imageUrl: data.imageUrl || data.photoUrl || data.previewUrl || data.image || '',
+    color: data.color || '',
+    quantity: data.quantity || '',
+  }
+}
+
+function toDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = () => resolve(String(reader.result || ''))
+    reader.onerror = () => reject(new Error('Не вдалося прочитати файл'))
+    reader.readAsDataURL(file)
+  })
+}
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, options)
@@ -21,10 +102,27 @@ async function request(path, options = {}) {
 }
 
 export function getInventory() {
+  return fetchInventory()
+}
+
+export function fetchInventory() {
+  if (USE_MOCK_STORAGE) {
+    return Promise.resolve(readStoredInventory())
+  }
+
   return request('/inventory')
 }
 
-export function createItem(data) {
+export function fetchInventoryById(id) {
+  if (USE_MOCK_STORAGE) {
+    const item = readStoredInventory().find((currentItem) => String(currentItem.id) === String(id))
+    return Promise.resolve(item ? { item } : null)
+  }
+
+  return request(`/inventory/${id}`)
+}
+
+export async function createItem(data) {
   const formData = data instanceof FormData ? data : new FormData()
 
   if (!(data instanceof FormData)) {
@@ -35,19 +133,43 @@ export function createItem(data) {
     })
   }
 
+  if (USE_MOCK_STORAGE) {
+    const values = Object.fromEntries(formData.entries())
+    const file = formData.get('photo')
+    const imageUrl = file instanceof File ? await toDataUrl(file) : ''
+    const createdItem = createStoredItem({ ...values, imageUrl })
+    const currentItems = readStoredInventory()
+    writeStoredInventory([createdItem, ...currentItems])
+    return createdItem
+  }
+
   return request('/register', {
     method: 'POST',
     body: formData,
   })
 }
 
-export function deleteItem(id) {
+export async function deleteItem(id) {
+  if (USE_MOCK_STORAGE) {
+    const remainingItems = readStoredInventory().filter((item) => String(item.id) !== String(id))
+    writeStoredInventory(remainingItems)
+    return null
+  }
+
   return request(`/inventory/${id}`, {
     method: 'DELETE',
   })
 }
 
-export function updateItem(id, data) {
+export async function updateItem(id, data) {
+  if (USE_MOCK_STORAGE) {
+    const updatedItems = readStoredInventory().map((item) =>
+      String(item.id) === String(id) ? { ...item, ...data } : item,
+    )
+    writeStoredInventory(updatedItems)
+    return updatedItems.find((item) => String(item.id) === String(id)) || null
+  }
+
   return request(`/inventory/${id}`, {
     method: 'PUT',
     headers: {
@@ -57,9 +179,18 @@ export function updateItem(id, data) {
   })
 }
 
-export function updateItemPhoto(id, photo) {
+export async function updateItemPhoto(id, photo) {
   const formData = new FormData()
   formData.append('photo', photo)
+
+  if (USE_MOCK_STORAGE) {
+    const imageUrl = photo instanceof File ? await toDataUrl(photo) : ''
+    const updatedItems = readStoredInventory().map((item) =>
+      String(item.id) === String(id) ? { ...item, imageUrl } : item,
+    )
+    writeStoredInventory(updatedItems)
+    return updatedItems.find((item) => String(item.id) === String(id)) || null
+  }
 
   return request(`/inventory/${id}/photo`, {
     method: 'PUT',
