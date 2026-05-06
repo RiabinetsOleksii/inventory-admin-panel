@@ -3,6 +3,8 @@ import AdminInventory from './pages/AdminInventory'
 import AdminInventoryCreate from './pages/AdminInventoryCreate'
 import AdminInventoryEdit from './pages/AdminInventoryEdit'
 import AdminInventoryDetails from './pages/AdminInventoryDetails'
+import Gallery from './pages/Gallery'
+import Favorites from './pages/Favorites'
 import { InventoryProvider } from './store/InventoryContext'
 import './App.css'
 
@@ -14,7 +16,9 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Основні сторінки */}
-          <Route path="/" element={<AdminInventory />} />
+          <Route path="/" element={<Gallery />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/create" element={<AdminInventoryCreate />} />
           <Route path="/details/:id" element={<AdminInventoryDetails />} />
           <Route path="/edit/:id" element={<AdminInventoryEdit />} />

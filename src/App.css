@@ -182,3 +182,42 @@
     border-right-color: var(--border);
   }
 }
+
+.gallery-page {
+  padding: 32px;
+}
+
+.gallery-header {
+  margin-bottom: 24px;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.inventory-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+}
+
+.inventory-card-image {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.inventory-card-placeholder {
+  height: 180px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-bg);
+}
+
+.inventory-card-content {
+  padding: 16px;
+}
