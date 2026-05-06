@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import InventoryCard from '../components/gallery/InventoryCard'
+import useFavorites from '../hooks/useFavorites'
 import { getInventory } from '../services/inventoryApi'
 
 function Gallery() {
 	const [items, setItems] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState('')
+	const { favoriteIds, isFavorite, toggleFavorite } = useFavorites()
 
 	useEffect(() => {
 		let isActive = true
@@ -50,7 +52,12 @@ function Gallery() {
 			) : (
 				<section className="inventory-grid">
 					{items.map((item) => (
-						<InventoryCard key={item.id} item={item} />
+						<InventoryCard
+							key={item.id}
+							item={item}
+							isFavorite={isFavorite(item.id)}
+							onToggleFavorite={toggleFavorite}
+						/>
 					))}
 				</section>
 			)}

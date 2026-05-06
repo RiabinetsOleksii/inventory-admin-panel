@@ -198,10 +198,32 @@
 }
 
 .inventory-card {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
   background: white;
+}
+
+.inventory-card-favorite {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  border: 0;
+  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.92);
+  color: #7a7a7a;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.inventory-card-favorite.is-active {
+  color: #d92d20;
 }
 
 .inventory-card-image {
