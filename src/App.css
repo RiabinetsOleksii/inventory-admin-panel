@@ -243,3 +243,71 @@
 .inventory-card-content {
   padding: 16px;
 }
+
+.inventory-card {
+  cursor: pointer;
+}
+
+.inventory-quick-view-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.inventory-quick-view {
+  position: relative;
+  width: min(92vw, 760px);
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+.inventory-quick-view-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: 0;
+  border-radius: 999px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.inventory-quick-view-image,
+.inventory-quick-view-placeholder {
+  display: block;
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  background: var(--accent-bg);
+}
+
+.inventory-quick-view-placeholder {
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
+
+.inventory-quick-view-content {
+  padding: 20px 24px 24px;
+}
+
+.inventory-quick-view-favorite {
+  margin-top: 12px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: #111827;
+  color: white;
+  cursor: pointer;
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import InventoryCard from '../components/gallery/InventoryCard'
+import InventoryQuickView from '../components/gallery/InventoryQuickView'
 import useFavorites from '../hooks/useFavorites'
 import { getInventory } from '../services/inventoryApi'
 
@@ -7,6 +8,7 @@ function Gallery() {
 	const [items, setItems] = useState([])
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState('')
+	const [selectedItem, setSelectedItem] = useState(null)
 	const { favoriteIds, isFavorite, toggleFavorite } = useFavorites()
 
 	useEffect(() => {
@@ -57,10 +59,18 @@ function Gallery() {
 							item={item}
 							isFavorite={isFavorite(item.id)}
 							onToggleFavorite={toggleFavorite}
+							onSelect={() => setSelectedItem(item)}
 						/>
 					))}
 				</section>
 			)}
+
+			<InventoryQuickView
+				item={selectedItem}
+				isFavorite={selectedItem ? isFavorite(selectedItem.id) : false}
+				onToggleFavorite={toggleFavorite}
+				onClose={() => setSelectedItem(null)}
+			/>
 		</main>
 	)
 }

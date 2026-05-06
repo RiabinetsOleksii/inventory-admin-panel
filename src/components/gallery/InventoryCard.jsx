@@ -2,15 +2,23 @@ function getItemImage(item) {
 	return item?.imageUrl || item?.photoUrl || item?.previewUrl || item?.image || ''
 }
 
-function InventoryCard({ item, isFavorite, onToggleFavorite }) {
+function InventoryCard({ item, isFavorite, onToggleFavorite, onSelect }) {
 	const imageSrc = getItemImage(item)
 
 	return (
-		<article className="inventory-card">
+		<article className="inventory-card" role="button" tabIndex={0} onClick={() => onSelect?.(item)} onKeyDown={(event) => {
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault()
+				onSelect?.(item)
+			}
+		}}>
 			<button
 				type="button"
 				className={`inventory-card-favorite ${isFavorite ? 'is-active' : ''}`}
-				onClick={() => onToggleFavorite?.(item.id)}
+				onClick={(event) => {
+					event.stopPropagation()
+					onToggleFavorite?.(item.id)
+				}}
 				aria-pressed={isFavorite}
 				aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
 			>
