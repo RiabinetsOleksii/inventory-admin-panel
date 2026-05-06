@@ -24,7 +24,7 @@ function InventoryQuickView({ item, isFavorite, onToggleFavorite, onClose }) {
 					<p>{item.description || 'Опис відсутній'}</p>
 
 					<button type="button" className="inventory-quick-view-favorite" onClick={() => onToggleFavorite?.(item.id)}>
-						{isFavorite ? '♥ У вибране' : '♡ У вибране'}
+						{isFavorite ? '♥ Прибрати з улюблених' : '♡ Додати в улюблені'}
 					</button>
 				</div>
 			</section>

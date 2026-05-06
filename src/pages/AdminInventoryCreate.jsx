@@ -1,3 +1,4 @@
+// сторінка додавання
 import { useNavigate } from 'react-router-dom'
 import InventoryForm from '../components/inventory/InventoryForm'
 import { useInventory } from '../store/InventoryContext'
@@ -19,7 +20,7 @@ function AdminInventoryCreate() {
         <div>
           <p className="admin-eyebrow">Admin inventory</p>
           <h1>Add inventory item</h1>
-          <p className="admin-copy">Fill in the item name, description, and optional photo.</p>
+          <p className="admin-copy">Заповни назву героя, опис, URL картинки або завантаж фото.</p>
         </div>
         <button type="button" className="admin-button admin-button-secondary" onClick={() => navigate('/')}>
           Back to list
@@ -27,7 +28,7 @@ function AdminInventoryCreate() {
       </header>
 
       <section className="admin-card">
-        <InventoryForm submitLabel="Create item" onSubmit={handleCreate} />
+        <InventoryForm submitLabel="Створити героя" onSubmit={handleCreate} />
       </section>
     </main>
   )

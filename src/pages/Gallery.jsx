@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import InventoryGallery from '../components/gallery/InventoryGallery'
 import InventoryCard from '../components/gallery/InventoryCard'
 import InventoryQuickView from '../components/gallery/InventoryQuickView'
@@ -10,7 +11,7 @@ function Gallery() {
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState('')
 	const [selectedItem, setSelectedItem] = useState(null)
-	const { favoriteIds, isFavorite, toggleFavorite } = useFavorites()
+	const { favoriteIds, favoriteCount, isFavorite, toggleFavorite, clearFavorites } = useFavorites()
 
 	useEffect(() => {
 		let isActive = true
@@ -45,8 +46,17 @@ function Gallery() {
 	return (
 		<main className="gallery-page">
 			<header className="gallery-header">
-				<h1>Gallery</h1>
-				<p>Inventory items displayed in a responsive grid.</p>
+				<div>
+					<h1>Галерея героїв Dota</h1>
+					<p>Клікай по картці, щоб відкрити quick view, або став серце в улюблені.</p>
+				</div>
+				<div className="gallery-header-actions">
+					<span className="gallery-header-chip">Улюблених: {favoriteCount}</span>
+					<Link className="gallery-header-link" to="/favorites">Переглянути улюблені</Link>
+					<button type="button" className="gallery-header-link" onClick={clearFavorites} disabled={favoriteCount === 0}>
+						Очистити
+					</button>
+				</div>
 			</header>
 
 			{error ? <p className="gallery-error">{error}</p> : null}

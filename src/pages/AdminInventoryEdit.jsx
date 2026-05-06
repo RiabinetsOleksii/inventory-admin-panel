@@ -7,6 +7,7 @@ function AdminInventoryEdit() {
   const { id } = useParams()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
   const [photo, setPhoto] = useState(null)
   const [isInitialized, setIsInitialized] = useState(false)
   const [isSavingText, setIsSavingText] = useState(false)
@@ -23,6 +24,7 @@ function AdminInventoryEdit() {
     if (item && !isInitialized) {
       setName(item.name || '')
       setDescription(item.description || '')
+      setImageUrl(item.imageUrl || item.photoUrl || item.previewUrl || item.image || '')
       setError('')
       setIsInitialized(true)
     }
@@ -43,7 +45,9 @@ function AdminInventoryEdit() {
     try {
       await saveInventoryItem(id, {
         name: name.trim(),
+        inventory_name: name.trim(),
         description: description.trim(),
+        imageUrl: imageUrl.trim(),
       })
       setError('')
       setTextMessage('Текстові дані оновлено')
@@ -99,10 +103,10 @@ function AdminInventoryEdit() {
         {!isLoading && item ? (
           <div className="inventory-edit-grid">
             <form className="inventory-form" onSubmit={handleTextSubmit}>
-              <h2>Text data</h2>
+              <h2>Текстові дані</h2>
 
               <div className="inventory-form-field">
-                <label htmlFor="name">Назва</label>
+                <label htmlFor="name">Назва героя</label>
                 <input
                   id="name"
                   name="name"
@@ -113,7 +117,7 @@ function AdminInventoryEdit() {
               </div>
 
               <div className="inventory-form-field">
-                <label htmlFor="description">Опис</label>
+                <label htmlFor="description">Опис героя</label>
                 <textarea
                   id="description"
                   name="description"
@@ -123,18 +127,30 @@ function AdminInventoryEdit() {
                 />
               </div>
 
+              <div className="inventory-form-field">
+                <label htmlFor="imageUrl">Посилання на картинку</label>
+                <input
+                  id="imageUrl"
+                  name="imageUrl"
+                  type="url"
+                  placeholder="https://..."
+                  value={imageUrl}
+                  onChange={(event) => setImageUrl(event.target.value)}
+                />
+              </div>
+
               {textMessage ? <p>{textMessage}</p> : null}
 
               <button type="submit" className="admin-button" disabled={isSavingText}>
-                {isSavingText ? 'Saving...' : 'Update text'}
+                {isSavingText ? 'Збереження...' : 'Оновити текст'}
               </button>
             </form>
 
             <form className="inventory-form" onSubmit={handlePhotoSubmit}>
-              <h2>Photo</h2>
+              <h2>Фото</h2>
 
               <div className="inventory-form-field">
-                <label htmlFor="photo">Фото</label>
+                <label htmlFor="photo">Фото героя</label>
                 <input
                   id="photo"
                   name="photo"
@@ -147,7 +163,7 @@ function AdminInventoryEdit() {
               {photoMessage ? <p>{photoMessage}</p> : null}
 
               <button type="submit" className="admin-button" disabled={isSavingPhoto}>
-                {isSavingPhoto ? 'Uploading...' : 'Update Photo'}
+                {isSavingPhoto ? 'Завантаження...' : 'Оновити фото'}
               </button>
             </form>
           </div>

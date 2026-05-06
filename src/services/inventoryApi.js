@@ -2,34 +2,91 @@ const API_BASE_URL = ''
 const INVENTORY_STORAGE_KEY = 'inventory-items'
 const USE_MOCK_STORAGE = !API_BASE_URL
 
+const DOTA_SEED_NAMES = [
+  'Акс',
+  'Брімастрік',
+  'Даззл',
+  'Морфлінг',
+  'Пудж',
+  'Кристал Мейден',
+]
+
 // Демонстраційні дані, якщо окремого backend немає.
 // Вони гарантують, що список інвентарю не буде порожнім під час демонстрації або без API.
 const seedInventory = [
   {
-    id: '1001',
-    name: 'Laptop Pro 14',
-    description: 'Lightweight laptop for admin inventory demos.',
-    imageUrl: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80',
-    color: 'Space Gray',
-    quantity: 12,
+    id: '2001',
+    name: 'Акс',
+    inventory_name: 'Акс',
+    description: 'Невтомний воїн першої лінії, який кидається в бій без вагань.',
+    imageUrl: 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/axe_full.png',
+    color: 'Червоний',
+    quantity: 1,
   },
   {
-    id: '1002',
-    name: 'Wireless Mouse',
-    description: 'Ergonomic mouse with silent clicks.',
-    imageUrl: 'https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=600&q=80',
-    color: 'Black',
-    quantity: 48,
+    id: '2002',
+    name: 'Брімастрік',
+    inventory_name: 'Брімастрік',
+    description: 'Маг вогню, що контролює поле бою та завдає шкоди з відстані.',
+    imageUrl: 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/brewmaster_full.png',
+    color: 'Помаранчевий',
+    quantity: 1,
   },
   {
-    id: '1003',
-    name: 'USB-C Dock',
-    description: 'Docking station with multiple display outputs.',
-    imageUrl: 'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?auto=format&fit=crop&w=600&q=80',
-    color: 'Silver',
-    quantity: 6,
+    id: '2003',
+    name: 'Даззл',
+    inventory_name: 'Даззл',
+    description: 'Підтримка команди, лікування та корисні закляття для довгих боїв.',
+    imageUrl: 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/dazzle_full.png',
+    color: 'Фіолетовий',
+    quantity: 1,
+  },
+  {
+    id: '2004',
+    name: 'Морфлінг',
+    inventory_name: 'Морфлінг',
+    description: 'Гнучкий герой, який змінює форму та підлаштовується під ситуацію.',
+    imageUrl: 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/morphling_full.png',
+    color: 'Блакитний',
+    quantity: 1,
+  },
+  {
+    id: '2005',
+    name: 'Пудж',
+    inventory_name: 'Пудж',
+    description: 'Небезпечний герой ближнього бою, який затягує ворогів у пастку.',
+    imageUrl: 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/pudge_full.png',
+    color: 'Зелений',
+    quantity: 1,
+  },
+  {
+    id: '2006',
+    name: 'Кристал Мейден',
+    inventory_name: 'Кристал Мейден',
+    description: 'Магічна підтримка з потужним контролем і холодною силою.',
+    imageUrl: 'https://cdn.cloudflare.steamstatic.com/apps/dota2/images/dota_react/heroes/crystal_maiden_full.png',
+    color: 'Синій',
+    quantity: 1,
   },
 ]
+
+function refreshStoredSeed(items) {
+  const seedById = new Map(seedInventory.map((item) => [String(item.id), item]))
+
+  return items.map((item) => {
+    const matchingSeed = seedById.get(String(item.id)) || seedInventory.find((seedItem) => seedItem.name === item.name)
+
+    return matchingSeed
+      ? {
+          ...matchingSeed,
+          ...item,
+          imageUrl: matchingSeed.imageUrl,
+          inventory_name: matchingSeed.inventory_name,
+          name: matchingSeed.name,
+        }
+      : item
+  })
+}
 
 function readStoredInventory() {
   // Читає список із localStorage або повертає seed-дані.
@@ -47,7 +104,16 @@ function readStoredInventory() {
 
   try {
     const parsedValue = JSON.parse(storedValue)
-    return Array.isArray(parsedValue) ? parsedValue : seedInventory
+    const isValidArray = Array.isArray(parsedValue)
+
+    if (!isValidArray) {
+      window.localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(seedInventory))
+      return seedInventory
+    }
+
+    const refreshedValue = refreshStoredSeed(parsedValue)
+    window.localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(refreshedValue))
+    return refreshedValue
   } catch {
     window.localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(seedInventory))
     return seedInventory
@@ -69,9 +135,11 @@ function createStoredItem(data) {
   // Формує новий елемент для локального fallback CRUD.
   // Цей об'єкт імітує те, що зазвичай повертає backend після POST-запиту.
   const nextId = String(Date.now())
+  const itemName = data.inventory_name || data.name || ''
   return {
     id: nextId,
-    name: data.name,
+    name: itemName,
+    inventory_name: itemName,
     description: data.description || '',
     imageUrl: data.imageUrl || data.photoUrl || data.previewUrl || data.image || '',
     color: data.color || '',
@@ -185,7 +253,14 @@ export async function updateItem(id, data) {
   // Використовується для назви та опису на сторінці редагування.
   if (USE_MOCK_STORAGE) {
     const updatedItems = readStoredInventory().map((item) =>
-      String(item.id) === String(id) ? { ...item, ...data } : item,
+      String(item.id) === String(id)
+        ? {
+            ...item,
+            ...data,
+            name: data.inventory_name || data.name || item.name,
+            inventory_name: data.inventory_name || data.name || item.inventory_name || item.name,
+          }
+        : item,
     )
     writeStoredInventory(updatedItems)
     return updatedItems.find((item) => String(item.id) === String(id)) || null

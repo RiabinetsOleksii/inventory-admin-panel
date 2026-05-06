@@ -1,8 +1,10 @@
+// форма додавання
 import { useState } from 'react'
 
 const initialFormState = {
   name: '',
   description: '',
+  imageUrl: '',
   photo: null,
 }
 
@@ -18,6 +20,7 @@ function InventoryForm({
   const [formValues, setFormValues] = useState({
     name: initialValues.name || '',
     description: initialValues.description || '',
+    imageUrl: initialValues.imageUrl || '',
     photo: null,
   })
   const [errors, setErrors] = useState({})
@@ -61,7 +64,9 @@ function InventoryForm({
     try {
       await onSubmit?.({
         name: formValues.name.trim(),
+        inventory_name: formValues.name.trim(),
         description: formValues.description.trim(),
+        imageUrl: formValues.imageUrl.trim(),
         photo: formValues.photo,
       })
     } catch (error) {
@@ -72,7 +77,7 @@ function InventoryForm({
   return (
     <form className="inventory-form" onSubmit={handleSubmit}>
       <div className="inventory-form-field">
-        <label htmlFor="name">Назва</label>
+        <label htmlFor="name">Назва героя</label>
         <input
           id="name"
           name="name"
@@ -90,7 +95,7 @@ function InventoryForm({
       </div>
 
       <div className="inventory-form-field">
-        <label htmlFor="description">Опис</label>
+        <label htmlFor="description">Опис героя</label>
         <textarea
           id="description"
           name="description"
@@ -101,7 +106,22 @@ function InventoryForm({
       </div>
 
       <div className="inventory-form-field">
-        <label htmlFor="photo">Фото</label>
+        <label htmlFor="imageUrl">Посилання на картинку</label>
+        <input
+          id="imageUrl"
+          name="imageUrl"
+          type="url"
+          placeholder="https://..."
+          value={formValues.imageUrl}
+          onChange={handleChange}
+        />
+        <p className="inventory-form-hint">
+          {formValues.imageUrl ? 'Картинка буде підставлена з посилання' : 'Можна вставити URL картинки з сайту або залишити порожнім'}
+        </p>
+      </div>
+
+      <div className="inventory-form-field">
+        <label htmlFor="photo">Фото героя</label>
         <input id="photo" name="photo" type="file" accept="image/*" onChange={handleChange} />
         <p className="inventory-form-hint">
           {formValues.photo ? `Обрано файл: ${formValues.photo.name}` : 'Можна завантажити фото товару'}

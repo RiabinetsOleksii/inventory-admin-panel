@@ -1,3 +1,4 @@
+// головна сторінка зі списком
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ConfirmModal from '../components/inventory/ConfirmModal'
@@ -81,14 +82,20 @@ function AdminInventory() {
           <h1>Inventory list</h1>
           <p className="admin-copy">Browse items, open details, or add a new product.</p>
         </div>
-        <Link className="admin-button" to="/create">
+        <Link className="admin-button" to="/create"> 
           Add item
         </Link>
       </header>
 
       <section className="admin-card">
         {error ? <p className="inventory-form-error">{error}</p> : null}
-        {isLoading ? <p>Loading inventory...</p> : <InventoryTable items={items} onDelete={handleDeleteRequest} />}
+        {isLoading ? (
+          <p>Loading inventory...</p>
+        ) : items.length ? (
+          <InventoryTable items={items} onDelete={handleDeleteRequest} />
+        ) : (
+          <p className="gallery-empty">Список інвентарю порожній.</p>
+        )}
       </section>
 
       <ConfirmModal

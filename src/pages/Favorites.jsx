@@ -10,7 +10,7 @@ function Favorites() {
 	const [isLoading, setIsLoading] = useState(true)
 	const [error, setError] = useState('')
 	const [selectedItem, setSelectedItem] = useState(null)
-	const { favoriteIds, favoriteCount, isFavorite, toggleFavorite } = useFavorites()
+	const { favoriteIds, favoriteCount, isFavorite, toggleFavorite, clearFavorites } = useFavorites()
 
 	useEffect(() => {
 		let isActive = true
@@ -50,11 +50,16 @@ function Favorites() {
 	return (
 		<main className="gallery-page">
 			<header className="gallery-header">
-				<h1>Favorites</h1>
-				<p>Items marked as favorite will appear here.</p>
+				<div>
+					<h1>Улюблені герої</h1>
+					<p>Тут показуються лише герої, яких ти позначив серцем.</p>
+				</div>
+				<div className="gallery-header-actions">
+					<span className="gallery-header-chip">Збережено: {favoriteCount}</span>
+				</div>
 			</header>
 
-			<FavoritesBar count={favoriteCount} />
+			<FavoritesBar count={favoriteCount} onClearFavorites={clearFavorites} />
 			{error ? <p className="gallery-error">{error}</p> : null}
 			<InventoryGallery
 				items={favoriteItems}
@@ -71,18 +76,6 @@ function Favorites() {
 				onToggleFavorite={toggleFavorite}
 				onClose={() => setSelectedItem(null)}
 			/>
-		</main>
-	)
-}
-
-export default Favorites
-function Favorites() {
-	return (
-		<main className="gallery-page">
-			<header className="gallery-header">
-				<h1>Favorites</h1>
-				<p>Items marked as favorite will appear here.</p>
-			</header>
 		</main>
 	)
 }

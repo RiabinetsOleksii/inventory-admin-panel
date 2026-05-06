@@ -1,3 +1,4 @@
+// таблиця з кнопками
 import { Link } from 'react-router-dom'
 
 function InventoryTable({ items = [], onDelete }) {
@@ -17,18 +18,19 @@ function InventoryTable({ items = [], onDelete }) {
         {items.map((item) => {
           // Вибираємо перше доступне поле з картинкою.
           const imageSrc = item.imageUrl || item.photoUrl || item.previewUrl || item.image
+          const itemName = item.inventory_name || item.name || 'Без назви'
 
           return (
             <tr key={item.id} className="admin-table-row inventory-table-row">
               <td>
-                <Link to={`/details/${item.id}`}>{item.name}</Link>
+                <Link to={`/details/${item.id}`}>{itemName}</Link>
               </td>
               <td>{item.description || '-'}</td>
               <td>
                 {imageSrc ? (
                   <img
                     src={imageSrc}
-                    alt={item.name}
+                    alt={itemName}
                     className="inventory-table-preview"
                     width="72"
                     height="72"

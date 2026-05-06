@@ -1,3 +1,4 @@
+// торінка деталей
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchInventoryById } from '../services/inventoryApi'
@@ -42,10 +43,11 @@ function AdminInventoryDetails() {
   }, [id])
 
   const imageSrc = item?.imageUrl || item?.photoUrl || item?.previewUrl || item?.image
+  const itemName = item?.inventory_name || item?.name || 'Без назви'
   const characteristics = item
     ? Object.entries(item).filter(
         ([key, value]) =>
-          !['id', 'name', 'description', 'imageUrl', 'photoUrl', 'previewUrl', 'image'].includes(key) &&
+          !['id', 'name', 'inventory_name', 'description', 'imageUrl', 'photoUrl', 'previewUrl', 'image'].includes(key) &&
           value !== null &&
           value !== undefined &&
           value !== '',
@@ -73,14 +75,14 @@ function AdminInventoryDetails() {
           <div className="inventory-details">
             <div className="inventory-details-media">
               {imageSrc ? (
-                <img src={imageSrc} alt={item.name} className="inventory-details-image" />
+                <img src={imageSrc} alt={itemName} className="inventory-details-image" />
               ) : (
                 <div className="inventory-details-placeholder">Немає фото</div>
               )}
             </div>
 
             <div className="inventory-details-content">
-              <h2>{item.name}</h2>
+              <h2>{itemName}</h2>
               <p>{item.description || 'Опис відсутній'}</p>
 
               <div className="inventory-details-characteristics">

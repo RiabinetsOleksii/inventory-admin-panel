@@ -46,10 +46,15 @@ export default function useFavorites() {
 
 	const favoriteCount = useMemo(() => favoriteIds.length, [favoriteIds])
 
+	const clearFavorites = () => {
+		setFavoriteIds([])
+	}
+
 	return {
 		favoriteIds,
 		favoriteCount,
 		isFavorite,
 		toggleFavorite,
+		clearFavorites,
 	}
 }

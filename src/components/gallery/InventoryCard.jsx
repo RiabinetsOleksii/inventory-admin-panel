@@ -27,7 +27,7 @@ function InventoryCard({ item, isFavorite, onToggleFavorite, onSelect }) {
 					onToggleFavorite?.(item.id)
 				}}
 				aria-pressed={isFavorite}
-				aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+				aria-label={isFavorite ? 'Прибрати з улюблених' : 'Додати в улюблені'}
 			>
 				{isFavorite ? '♥' : '♡'}
 			</button>
