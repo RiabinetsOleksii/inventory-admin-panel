@@ -13,6 +13,8 @@ function InventoryForm({
   isSubmitting = false,
   submitError = '',
 }) {
+  // Локальний стан форми для створення товару.
+  // Сам компонент не зберігає дані назавжди — він лише збирає їх перед відправкою.
   const [formValues, setFormValues] = useState({
     name: initialValues.name || '',
     description: initialValues.description || '',
@@ -35,6 +37,7 @@ function InventoryForm({
   }
 
   const validate = () => {
+    // Мінімальна валідація: назва має бути заповнена.
     const nextErrors = {}
 
     if (!formValues.name.trim()) {
@@ -50,6 +53,7 @@ function InventoryForm({
 
     setLocalError('')
 
+    // Якщо валідація не пройдена, сабміт зупиняється.
     if (!validate()) {
       return
     }

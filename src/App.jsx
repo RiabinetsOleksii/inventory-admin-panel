@@ -8,13 +8,18 @@ import './App.css'
 
 function App() {
   return (
+    // Глобальний провайдер стану + маршрути адмін-інвентарю.
+    // Так однакові дані доступні для списку, деталей, створення та редагування.
     <InventoryProvider>
       <BrowserRouter>
         <Routes>
+          {/* Основні сторінки */}
           <Route path="/" element={<AdminInventory />} />
           <Route path="/create" element={<AdminInventoryCreate />} />
           <Route path="/details/:id" element={<AdminInventoryDetails />} />
           <Route path="/edit/:id" element={<AdminInventoryEdit />} />
+
+          {/* Старі admin-адреси залишені як запасні переходи */}
           <Route path="/admin/inventory" element={<AdminInventory />} />
           <Route path="/admin/inventory/create" element={<AdminInventoryCreate />} />
           <Route path="/admin/inventory/:id" element={<AdminInventoryDetails />} />

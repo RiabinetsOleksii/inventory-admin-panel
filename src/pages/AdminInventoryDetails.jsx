@@ -3,14 +3,17 @@ import { Link, useParams } from 'react-router-dom'
 import { fetchInventoryById } from '../services/inventoryApi'
 
 function AdminInventoryDetails() {
+  // Сторінка деталей: вантажить один товар за id і показує повну картку.
   const { id } = useParams()
   const [item, setItem] = useState(null)
+    // Тобто ця сторінка відкриває повну картку одного товару без зайвого списку.
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
     let isActive = true
 
+    // Окремий запит на один елемент.
     const loadItem = async () => {
       try {
         const response = await fetchInventoryById(id)

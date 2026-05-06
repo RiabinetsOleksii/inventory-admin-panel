@@ -5,6 +5,7 @@ import InventoryTable from '../components/inventory/InventoryTable'
 import { deleteItem, fetchInventory } from '../services/inventoryApi'
 
 function AdminInventory() {
+  // Стан списку, помилок і модалки видалення.
   const [items, setItems] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -14,6 +15,7 @@ function AdminInventory() {
   useEffect(() => {
     let isActive = true
 
+    // Завантажуємо список при відкритті сторінки.
     const loadInventory = async () => {
       try {
         const inventory = await fetchInventory()
@@ -42,6 +44,7 @@ function AdminInventory() {
   }, [])
 
   const handleDeleteRequest = (item) => {
+    // Відкриває модалку підтвердження.
     setItemToDelete(item)
   }
 
@@ -56,6 +59,7 @@ function AdminInventory() {
       return
     }
 
+    // Спочатку видаляємо, потім прибираємо з UI.
     setIsDeleting(true)
 
     try {

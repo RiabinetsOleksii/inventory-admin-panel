@@ -7,6 +7,7 @@ function ConfirmModal({
   onConfirm,
   onCancel,
 }) {
+  // Якщо модалка вимкнена, нічого не рендеримо.
   if (!isOpen) {
     return null
   }

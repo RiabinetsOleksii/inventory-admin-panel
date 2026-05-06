@@ -2,6 +2,8 @@ const API_BASE_URL = ''
 const INVENTORY_STORAGE_KEY = 'inventory-items'
 const USE_MOCK_STORAGE = !API_BASE_URL
 
+// Демонстраційні дані, якщо окремого backend немає.
+// Вони гарантують, що список інвентарю не буде порожнім під час демонстрації або без API.
 const seedInventory = [
   {
     id: '1001',
@@ -30,6 +32,8 @@ const seedInventory = [
 ]
 
 function readStoredInventory() {
+  // Читає список із localStorage або повертає seed-дані.
+  // Якщо запису ще немає, ініціалізує сховище стартовим набором.
   if (typeof window === 'undefined') {
     return seedInventory
   }
@@ -51,6 +55,8 @@ function readStoredInventory() {
 }
 
 function writeStoredInventory(items) {
+  // Записує оновлений список у localStorage.
+  // Так зміни зберігаються після перезавантаження сторінки.
   if (typeof window === 'undefined') {
     return items
   }
@@ -60,6 +66,8 @@ function writeStoredInventory(items) {
 }
 
 function createStoredItem(data) {
+  // Формує новий елемент для локального fallback CRUD.
+  // Цей об'єкт імітує те, що зазвичай повертає backend після POST-запиту.
   const nextId = String(Date.now())
   return {
     id: nextId,
@@ -72,6 +80,8 @@ function createStoredItem(data) {
 }
 
 function toDataUrl(file) {
+  // Перетворює файл у data URL для локального прев'ю фото.
+  // Це потрібно, щоб зображення можна було показати навіть без upload-сервера.
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
 
@@ -82,6 +92,8 @@ function toDataUrl(file) {
 }
 
 async function request(path, options = {}) {
+  // Стандартний HTTP-запит до backend, якщо він підключений.
+  // Якщо backend з'явиться, цей метод можна буде використовувати без змін у UI.
   const response = await fetch(`${API_BASE_URL}${path}`, options)
 
   if (!response.ok) {
@@ -107,6 +119,7 @@ export function getInventory() {
 
 export function fetchInventory() {
   if (USE_MOCK_STORAGE) {
+    // У fallback-режимі віддаємо масив одразу з localStorage.
     return Promise.resolve(readStoredInventory())
   }
 
@@ -115,6 +128,7 @@ export function fetchInventory() {
 
 export function fetchInventoryById(id) {
   if (USE_MOCK_STORAGE) {
+    // Для details-сторінки шукаємо один запис по id у локальному списку.
     const item = readStoredInventory().find((currentItem) => String(currentItem.id) === String(id))
     return Promise.resolve(item ? { item } : null)
   }
@@ -123,6 +137,8 @@ export function fetchInventoryById(id) {
 }
 
 export async function createItem(data) {
+  // Створення через API або через localStorage-fallback.
+  // Сюди приходять дані з форми створення, включно з фото-файлом.
   const formData = data instanceof FormData ? data : new FormData()
 
   if (!(data instanceof FormData)) {
@@ -134,6 +150,7 @@ export async function createItem(data) {
   }
 
   if (USE_MOCK_STORAGE) {
+    // Якщо API недоступний, зберігаємо новий товар локально і повертаємо його одразу.
     const values = Object.fromEntries(formData.entries())
     const file = formData.get('photo')
     const imageUrl = file instanceof File ? await toDataUrl(file) : ''
@@ -150,6 +167,8 @@ export async function createItem(data) {
 }
 
 export async function deleteItem(id) {
+  // Видалення через API або локальний fallback.
+  // У обох випадках результат один: товар зникає зі списку.
   if (USE_MOCK_STORAGE) {
     const remainingItems = readStoredInventory().filter((item) => String(item.id) !== String(id))
     writeStoredInventory(remainingItems)
@@ -162,6 +181,8 @@ export async function deleteItem(id) {
 }
 
 export async function updateItem(id, data) {
+  // JSON-оновлення текстових даних.
+  // Використовується для назви та опису на сторінці редагування.
   if (USE_MOCK_STORAGE) {
     const updatedItems = readStoredInventory().map((item) =>
       String(item.id) === String(id) ? { ...item, ...data } : item,
@@ -180,6 +201,8 @@ export async function updateItem(id, data) {
 }
 
 export async function updateItemPhoto(id, photo) {
+  // Окремий multipart-запит для фото.
+  // Це спеціально винесено окремо, щоб показати інший тип відправки даних.
   const formData = new FormData()
   formData.append('photo', photo)
 

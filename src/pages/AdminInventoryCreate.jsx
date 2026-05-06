@@ -3,10 +3,12 @@ import InventoryForm from '../components/inventory/InventoryForm'
 import { useInventory } from '../store/InventoryContext'
 
 function AdminInventoryCreate() {
+  // Форма створення працює через спільний контекст інвентарю.
   const navigate = useNavigate()
   const { addInventoryItem } = useInventory()
 
   const handleCreate = async (formData) => {
+    // Після створення повертаємось до списку.
     await addInventoryItem(formData)
     navigate('/')
   }

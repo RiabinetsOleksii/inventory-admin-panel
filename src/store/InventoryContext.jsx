@@ -1,9 +1,12 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { createItem, deleteItem, getInventory, updateItem, updateItemPhoto } from '../services/inventoryApi'
 
+// Контекст тримає спільний список товарів і CRUD-операції для всіх сторінок.
 const InventoryContext = createContext(null)
 
 function normalizeInventory(inventory) {
+  // Приводить відповідь сервера до єдиного формату масиву.
+  // Це робить код сторінок простішим, бо вони завжди працюють з arrays.
   if (Array.isArray(inventory)) {
     return inventory
   }
@@ -16,6 +19,7 @@ export function InventoryProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
+  // Завантажує актуальний список на старті та при потребі оновлення.
   const loadInventory = async () => {
     setIsLoading(true)
 
@@ -34,6 +38,7 @@ export function InventoryProvider({ children }) {
     loadInventory()
   }, [])
 
+  // Додає новий елемент у спільний стан після створення.
   const addInventoryItem = async (data) => {
     const createdItem = await createItem(data)
 
@@ -47,10 +52,12 @@ export function InventoryProvider({ children }) {
   }
 
   const removeInventoryItem = async (id) => {
+    // Видалення синхронізує backend/fallback і локальний список.
     await deleteItem(id)
     setItems((currentItems) => currentItems.filter((item) => String(item.id) !== String(id)))
   }
 
+  // Оновлює тільки текстові поля товару.
   const saveInventoryItem = async (id, data) => {
     const updatedItem = await updateItem(id, data)
 
@@ -64,6 +71,7 @@ export function InventoryProvider({ children }) {
   }
 
   const saveInventoryPhoto = async (id, photo) => {
+    // Окреме оновлення фото, щоб не змішувати з JSON-запитом.
     const updatedItem = await updateItemPhoto(id, photo)
 
     setItems((currentItems) =>
@@ -81,6 +89,7 @@ export function InventoryProvider({ children }) {
     return updatedItem
   }
 
+  // Зручний пошук елемента для сторінок деталей і редагування.
   const getItemById = (id) => items.find((item) => String(item.id) === String(id)) || null
 
   const value = useMemo(

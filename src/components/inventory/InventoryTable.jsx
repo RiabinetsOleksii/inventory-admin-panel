@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 
 function InventoryTable({ items = [], onDelete }) {
+  // Таблиця списку: назва, опис, прев'ю фото і дії.
+  // Кожен рядок тут відповідає окремому товару, а дії ведуть на перегляд, редагування або видалення.
   return (
     <table className="admin-table inventory-table">
       <thead>
@@ -13,6 +15,7 @@ function InventoryTable({ items = [], onDelete }) {
       </thead>
       <tbody>
         {items.map((item) => {
+          // Вибираємо перше доступне поле з картинкою.
           const imageSrc = item.imageUrl || item.photoUrl || item.previewUrl || item.image
 
           return (

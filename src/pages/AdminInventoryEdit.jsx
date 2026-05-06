@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useInventory } from '../store/InventoryContext'
 
 function AdminInventoryEdit() {
+  // Редагування розділене на текстові дані та фото.
   const { id } = useParams()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
@@ -18,6 +19,7 @@ function AdminInventoryEdit() {
   const item = getItemById(id)
 
   useEffect(() => {
+    // Підтягуємо початкові значення лише один раз, коли item уже є в контексті.
     if (item && !isInitialized) {
       setName(item.name || '')
       setDescription(item.description || '')
@@ -30,6 +32,7 @@ function AdminInventoryEdit() {
     event.preventDefault()
     setTextMessage('')
 
+    // Назва обов'язкова навіть для оновлення.
     if (!name.trim()) {
       setError("Назва є обов'язковою")
       return
@@ -55,6 +58,7 @@ function AdminInventoryEdit() {
     event.preventDefault()
     setPhotoMessage('')
 
+    // Фото оновлюється окремо, тільки якщо файл вибраний.
     if (!photo) {
       setError('Оберіть фото для завантаження')
       return
