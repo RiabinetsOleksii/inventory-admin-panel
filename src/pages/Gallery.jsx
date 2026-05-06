@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import InventoryGallery from '../components/gallery/InventoryGallery'
 import InventoryCard from '../components/gallery/InventoryCard'
 import InventoryQuickView from '../components/gallery/InventoryQuickView'
 import useFavorites from '../hooks/useFavorites'
@@ -49,21 +50,13 @@ function Gallery() {
 			</header>
 
 			{error ? <p className="gallery-error">{error}</p> : null}
-			{isLoading ? (
-				<p>Loading inventory...</p>
-			) : (
-				<section className="inventory-grid">
-					{items.map((item) => (
-						<InventoryCard
-							key={item.id}
-							item={item}
-							isFavorite={isFavorite(item.id)}
-							onToggleFavorite={toggleFavorite}
-							onSelect={() => setSelectedItem(item)}
-						/>
-					))}
-				</section>
-			)}
+			<InventoryGallery
+				items={items}
+				favoriteIds={favoriteIds}
+				isLoading={isLoading}
+				onToggleFavorite={toggleFavorite}
+				onSelect={(item) => setSelectedItem(item)}
+			/>
 
 			<InventoryQuickView
 				item={selectedItem}
